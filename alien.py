@@ -24,5 +24,15 @@ class Alien(Sprite):
 
     def update(self):
         #向右移动外星人
-        self.x += self.settings.enemy_speed
+        self.x += self.settings.enemy_speed * self.settings.fleet_direction
         self.rect.x = self.x
+
+    #检查外星人是否碰到了屏幕边缘
+    def is_reach_edge(self):
+        screen_rect = self.screen.get_rect()
+        if self.rect.right >= screen_rect.right:
+            return True
+        elif self.rect.left <= 0:
+            return True
+        else:
+            return False

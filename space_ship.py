@@ -12,10 +12,13 @@ class SpaceShip():
         self.screen_rect = screen.get_rect()
         self.settings = settings
         self.center = float(self.rect.centerx)
+        self.middle = float(self.rect.centery)
 
         #移动标志
         self.moving_right = False
         self.moving_left = False
+        self.moving_forward = False
+        self.moving_backward = False
 
         #将每艘新飞船放在屏幕底部中央
         self.rect.centerx = int(settings.screen_width/2)
@@ -31,9 +34,14 @@ class SpaceShip():
             self.center += self.settings.ship_speed_factor
         if self.moving_left and self.rect.left > 0:
             self.center -= self.settings.ship_speed_factor
+        if self.moving_forward and self.rect.top > 0:
+            self.middle -= self.settings.ship_speed_factor
+        if self.moving_backward and self.rect.bottom < self.screen_rect.bottom:
+            self.middle += self.settings.ship_speed_factor
         #根据center更新rect对象
         self.rect.centerx = self.center
+        self.rect.centery = self.middle
 
     def replace_space_ship(self):
         self.rect.centerx = self.screen_rect.centerx
-        self.rect.bottom = self.screen_rect.bottom
+        self.rect.centery = self.screen_rect.bottom
