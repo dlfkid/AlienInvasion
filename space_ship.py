@@ -44,4 +44,4 @@ class SpaceShip():
 
     def replace_space_ship(self):
         self.rect.centerx = self.screen_rect.centerx
-        self.rect.centery = self.screen_rect.bottom
+        self.rect.bottom = self.screen_rect.bottom

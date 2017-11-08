@@ -6,3 +6,4 @@ class GameState():
 
     def reset_state(self):
         self.ships_left = self.settings.ship_limit
+        self.game_active = False

@@ -7,7 +7,7 @@ from alien import Alien
 from time import sleep
 
 #检测按键
-def check_events(ship,settings,bullets,screen):
+def check_events(ship,settings,bullets,screen,play_button,state):
     #相应按键和鼠标事件
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -16,9 +16,17 @@ def check_events(ship,settings,bullets,screen):
             check_key_down(event,ship,settings,bullets,screen)
         elif event.type == pygame.KEYUP:
             check_key_up(event,ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x,mouse_y = pygame.mouse.get_pos()
+            check_play_button(state,play_button,mouse_x,mouse_y)
+
+def check_play_button(state,play_button,mouse_x,mouse_y):
+    #玩家在按下play按钮后开始游戏
+    if play_button.rect.collidepoint(mouse_x,mouse_y):
+        state.game_active = True
 
 #更新屏幕
-def update_screen(settings,screen,ship,bullets,aliens):
+def update_screen(settings,screen,ship,bullets,aliens,play_button,state):
     #更新屏幕图像，并切换到新屏幕
     screen.fill(settings.bg_color)
 
@@ -29,12 +37,16 @@ def update_screen(settings,screen,ship,bullets,aliens):
     ship.blitme()
     aliens.draw(screen)
 
+    #如果游戏处于非活跃状态，就绘制play按钮
+    if not state.game_active:
+        play_button.draw_button()
+
     #让屏幕刷新
     pygame.display.flip()
 
 def check_key_down(event,ship,settings,bullets,screen):
-    if event.key == pygame.K_RIGHT:
     # 移动飞船
+    if event.key == pygame.K_RIGHT:
         ship.moving_right = True
     if event.key == pygame.K_LEFT:
         ship.moving_left = True
@@ -146,19 +158,31 @@ def update_aliens(settings,aliens,ship,game_state,screen,bullets):
     #更新每个外星人的位置
     check_fleet_reach_edges(settings=settings,aliens=aliens)
     check_ship_been_hit(settings,screen,aliens,ship,state=game_state,bullets=bullets)
+    check_aliens_reach_bottom(settings=settings,ship=ship,aliens=aliens,bullets=bullets,state=game_state,screen=screen)
     aliens.update()
 
 def ship_hit(settings,state,screen,ship,bullets,aliens):
-    #响应被外星人撞到的飞船
-    state.ships_left -= 1
+    if state.ships_left > 0:
+        #响应被外星人撞到的飞船
+        state.ships_left -= 1
 
-    #清空外星人和子弹列表
-    aliens.empty()
-    bullets.empty()
+        #清空外星人和子弹列表
+        aliens.empty()
+        bullets.empty()
 
-    #创建新的外星人舰队,重置飞船位置
-    create_alien_fleet(settings=settings,aliens=aliens,screen=screen,ship=ship)
-    ship.replace_space_ship()
+        #创建新的外星人舰队,重置飞船位置
+        create_alien_fleet(settings=settings,aliens=aliens,screen=screen,ship=ship)
+        ship.replace_space_ship()
 
-    #暂停
-    sleep(1)
+        #暂停
+        sleep(1)
+    else:
+        state.game_active = False
+
+def check_aliens_reach_bottom(settings,state,screen,ship,aliens,bullets):
+    #检查是否有外星人抵达屏幕低端
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            ship_hit(state=state,settings=settings,screen=screen,ship=ship,bullets=bullets,aliens=aliens)
+            break
