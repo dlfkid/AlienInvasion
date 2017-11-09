@@ -18,11 +18,13 @@ def check_events(ship,settings,bullets,screen,play_button,state):
             check_key_up(event,ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x,mouse_y = pygame.mouse.get_pos()
-            check_play_button(state,play_button,mouse_x,mouse_y)
+            check_play_button(settings,state,play_button,mouse_x,mouse_y)
 
-def check_play_button(state,play_button,mouse_x,mouse_y):
+def check_play_button(settings,state,play_button,mouse_x,mouse_y):
     #玩家在按下play按钮后开始游戏
-    if play_button.rect.collidepoint(mouse_x,mouse_y):
+    button_clicked = play_button.rect.collidepoint(mouse_x,mouse_y)
+    if button_clicked and not state.game_active:
+        settings.initialize_dynamic_settings()
         state.game_active = True
 
 #更新屏幕
@@ -98,8 +100,10 @@ def check_bullet_alien_collide(bullets,aliens):
 def alien_spawn(bullets,settings,aliens,ship,screen):
     #刷新外星人
     if len(aliens) == 0:
+        ship.replace_space_ship()
         #删除现有的子弹并刷新外星人
         bullets.empty()
+        settings.increase_speed()
         create_alien_fleet(settings=settings,aliens=aliens,ship=ship,screen=screen)
 
 def create_alien_fleet(settings,screen,aliens,ship):
@@ -151,7 +155,6 @@ def change_fleet_direction(settings,aliens):
 
 def check_ship_been_hit(settings,screen,aliens,ship,bullets,state):
     if pygame.sprite.spritecollideany(ship,aliens):
-        print("Ship was hit!")
         ship_hit(settings=settings,aliens=aliens,ship=ship,screen=screen,state=state,bullets=bullets)
 
 def update_aliens(settings,aliens,ship,game_state,screen,bullets):
@@ -171,8 +174,8 @@ def ship_hit(settings,state,screen,ship,bullets,aliens):
         bullets.empty()
 
         #创建新的外星人舰队,重置飞船位置
-        create_alien_fleet(settings=settings,aliens=aliens,screen=screen,ship=ship)
         ship.replace_space_ship()
+        create_alien_fleet(settings=settings, aliens=aliens, screen=screen, ship=ship)
 
         #暂停
         sleep(1)

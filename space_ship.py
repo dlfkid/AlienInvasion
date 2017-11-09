@@ -21,14 +21,13 @@ class SpaceShip():
         self.moving_backward = False
 
         #将每艘新飞船放在屏幕底部中央
-        self.rect.centerx = int(settings.screen_width/2)
-        self.rect.bottom = self.screen_rect.bottom
+        self.replace_space_ship()
 
     def blitme(self):
         #在指定位置绘制飞船
         self.screen.blit(self.image,self.rect)
 
-    def update_move_state(self):
+    def update(self):
         #更新飞船移动状态
         if self.moving_right and self.rect.right < self.screen_rect.right:
             self.center += self.settings.ship_speed_factor
@@ -43,5 +42,15 @@ class SpaceShip():
         self.rect.centery = self.middle
 
     def replace_space_ship(self):
+        self.moving_left = False
+        self.moving_right = False
+        self.moving_forward = False
+        self.moving_backward = False
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
+
+    def is_at_left_top(self):
+        if self.rect.left <= 0 and self.rect.top <= 0:
+            return True
+        else:
+            return False

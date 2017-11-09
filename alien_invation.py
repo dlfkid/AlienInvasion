@@ -36,8 +36,9 @@ def run_game():
         #监控键盘和鼠标
         GAMEFUNCTION.check_events(ship=ship,settings=settingCenter,bullets=bullets,screen=screen,state=game_state,play_button=play_button)
         if game_state.game_active == True:
+            #判断飞船是否在左上角 
             #更新飞船移动状态
-            ship.update_move_state()
+            ship.update()
             #更新子弹位置
             GAMEFUNCTION.update_bullets(settings=settingCenter,ship=ship,bullets = bullets,aliens=aliens,screen=screen)
             #更新外星人位置

@@ -18,6 +18,19 @@ class Settings():
         self.bullet_maximun = 5
         #外星人速度设置
         self.enemy_speed = 2
+        self.enemy_speed_up_scale = 1.1
         self.fleet_drop_speed = 20
         #外星人飞行方向，1表示右移，-1表示作移
         self.fleet_direction = 1
+
+    def initialize_dynamic_settings(self):
+        self.ship_speed_factor = 1.5
+        self.bullet_speed_factor = 3
+        self.enemy_speed = 1
+
+        self.fleet_direction = 1
+
+    def increase_speed(self):
+        self.ship_speed_factor *= self.enemy_speed_up_scale
+        self.bullet_speed_factor *= self.enemy_speed_up_scale
+        self.enemy_speed *= self.enemy_speed_up_scale
